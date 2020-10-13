@@ -1,5 +1,5 @@
 package mb;
-
+//Главный класс программы
 public class mb {
 
 	public static void main(String[] args) {

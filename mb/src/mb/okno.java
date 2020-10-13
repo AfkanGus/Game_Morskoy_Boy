@@ -13,7 +13,7 @@ public class okno extends JFrame {
 		Container cont = getContentPane();
 		cont.add(pan);
 		
-		//Заголовок окга
+		//Заголовок окна
 		setTitle(" Игра\"Морской бой\"");
 		//Границы окна: разположение и размеры
 		setBounds(0,0,900,600);
