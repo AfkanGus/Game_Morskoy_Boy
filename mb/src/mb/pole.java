@@ -17,8 +17,64 @@ public class pole extends JPanel {
 	private JButton btn1, btn2;
 	//Переменная для реализации лигоки игры
 	private game myGame;
+	//Координаты курсоры мыши
+	private int mX,mY;
+	
+	public class myMouse1 implements MouseListener {
+		public void mouseClicked(MouseEvent e) {}
+		//При нажатии кнопки мыши
+		public void mousePressed(MouseEvent e) {
+			//Если сделано одиночное нажатие леврй клавишей мыши
+			if((e.getButton()==1)&&(e.getClickCount()==1)) {
+				//Получаем текущие координаты курсора мыши
+				mX = e.getX();
+				mY = e.getY();
+				//Если курсор мыши внутри игрового поля компьютера
+				if((mX>100)&&(mY>100)&&(mX<400)&&(mY<400)) {
+					//Если не конец игры и ход игрока
+					if((myGame.endg==0)&&(myGame.compHod==false)) {
+						//Вычисляем номера элемента в строке в массиве
+						int i = (mX -100)/30;
+						//Вычисляем номер элемента в строке в массиве
+						int j = (mX-100)/30;
+						//Если ячейка подходит для выстрела
+						if(myGame.masComp[i][j]<=4)
+							//Производим выстрел
+							myGame.vistrelPlay(i, j);
+					}
+				}
+				
+			}
+		}
+		
+		public void mouseReleased(MouseEvent e) {}
+		
+		public void mouseEntered(MouseEvent e) {}
+		
+		public void mouseExited(MouseEvent e) {}
+	}
+
+	public class myMouse2 implements MouseMotionListener {
+		public void mouseDragged(MouseEvent e) {}
+
+		//При перемещении курсора мыши
+		public void mouseMoved(MouseEvent e) {
+			//Получение координаты курсора
+			mX = e.getX();
+			mY = e.getY();
+			//Если курсор в области игрока
+			if((mX>= 100)&&(mY>=100)&&(mX<=400)&&(mY<=400))
+				setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+			else
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		}
+	}
+	
 // конструктор класса
 	public pole() {
+		addMouseListener(new myMouse1());
+		addMouseMotionListener(new myMouse2());
+		setFocusable(true);//Передаем фокус панели
 		//Создаем объект новой игры
 		myGame = new game();
 		//Запускаем игру
@@ -74,6 +130,7 @@ public class pole extends JPanel {
 		});
 		add(btn2);
 	}
+	
 	// Метод отрисовки
 	public void paintComponent(Graphics gr) {
 		// Очищение игрового поля
@@ -87,19 +144,74 @@ public class pole extends JPanel {
 		// выведение надписей
 		gr.drawString("Компьютер", 150, 50);
 		gr.drawString("Игрок", 590, 50);
-		//Отрисовка игрового поля Игрок на оснвоании массива
+		
+		//Отрисвока игровых полей Компьютера и игрока на осовании массивав
 		for(int i =0; i< 10; i++) {
 			for(int j =0; j <10; j++){
-				//Если палуба корабля
+				//ИГровое поле компьютера
+				if(myGame.masComp[i][j]!=0) {
+					//Если это подбитая полуба корабля
+					if((myGame.masComp[i][j]>=8)&&(myGame.masComp[i][j]<=11)) {
+						gr.drawImage(ranen,100+j*30,100+i*30,30,30,null);
+					}
+					//Если это палуба полностью подбитого кораблся
+					else if(myGame.masComp[i][j]>=15) {
+						gr.drawImage(ubit,100+j*30,100+i*30,30,30,null);
+					}
+					//Если был выстрел
+					if(myGame.masComp[i][j]>=5) {
+						gr.drawImage(bomba,100+j*30,100+i*30,30,30,null);
+					}
+				}
+				//Игрвое поле игрока
+				if(myGame.masPlay[i][j]!=0)
+				{
+				//Если это палуба корабля
 				if((myGame.masPlay[i][j]>= 1)&&(myGame.masPlay[i][j] <= 4)) {
 					gr.drawImage(paluba, 500 + j*30, 100 + i * 30,30,30,null);
 				}
+				//Если это подбитая полуба корабля
+				else if((myGame.masPlay[i][j]>=8)&&(myGame.masPlay[i][j]<=11)) {
+					gr.drawImage(ranen, 500+j*30,100+i*30,30,30,null);
+				}
+				//если это поалуба польностью подбитого корабля
+				else if (myGame.masPlay[i][j]>=15) {
+					gr.drawImage(ubit,500+j*30,100+i*30,30,30,null);
+				}
+				//Если был выстрел
+				if(myGame.masPlay[i][j] >= 5) {
+					gr.drawImage(bomba,500+j*30,100+i*30,30,30,null);
+				}
+				
 			}
+				
 		}
+		}
+	
+		gr.setColor(Color.red);//Красный цвет
+		//Елси курсор мыши внутри игрового поля компьютера
+		if((mX>100)&&(mY>100)&&(mX<400)&&(mY<400)) {
+			//Если не конец игры и ход игрока
+			if((myGame.endg==0)&&(myGame.compHod==false)) 
+			{
+			//Вычисляем номер строки в массиве
+			int i = (mY-100)/30;
+			//Вычисляем номер элемента в строкке в массиве
+			int j = (mX-100)/30;
+			//Если ячейка подходит для выстрела
+			if(myGame.masComp[i][j]<=4)
+			//Рисуем квадрат с заливкой
+				gr.fillRect(100+j*30, 100+i*30, 30, 30);
+			
+		
+	}
+	}	
+	
+		
 		// отисовка сетки игрового поля Компьютера
 		gr.setColor(Color.blue);
 		for (int i = 0; i <= 10; i++) {
-			// рисование линий сетки игрового поля
+			// рисование линий сетки игрового поля Компьютера
 			gr.drawLine(100 + i * 30, 100, 100 + i * 30, 400);
 			gr.drawLine(100, 100 + i * 30, 400, 100 + i * 30);
 			// рисование линий сетки ирового поля Игрока
@@ -121,7 +233,17 @@ public class pole extends JPanel {
 			gr.drawString("" + (char) ('A' + i - 1), 78 + i * 30, 93);
 			gr.drawString("" + (char) ('A' + i - 1), 478 + i * 30, 93);
 		}
-
-	}
-
+		//Вывод изображения конца игры - при окончании игры
+		if(myGame.endg==1)//Если победил игрок
+		{ 
+			gr.drawImage(end1, 300, 200,300,100,null);
+		}
+		else if(myGame.endg==2)//Если победил компьютер
+		{
+			gr.drawImage(end2, 300, 200, 300, 100, null);
+		}
+		}
+	
 }
+
+
